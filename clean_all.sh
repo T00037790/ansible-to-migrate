@@ -17,11 +17,10 @@ echo "Limpieza lista."
 echo
 echo "----------------------"
 echo "Recreando dockers"
-./create_dockers.sh server:16.04
+./create_dockers.sh contenedor:latest
 
-ssh -o StrictHostKeyChecking=no root@server01 -p 2221 -i key.private hostname
-ssh -o StrictHostKeyChecking=no root@server02 -p 2222 -i key.private hostname
-ssh -o StrictHostKeyChecking=no root@server03 -p 2223 -i key.private hostname
+ssh -o StrictHostKeyChecking=no -v root@server01 -p 2224 -i key.private hostname
+ssh -o StrictHostKeyChecking=no -v root@server02 -p 2225 -i key.private hostname
 echo "Adicionadas las llaves ssh."
 echo
 echo "----------------------"
