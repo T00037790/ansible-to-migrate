@@ -44,3 +44,10 @@ ejecucion y compilacion del role mysql:
 Once done, you can check the results by browsing to http://localhost/index.php.
 You should see a simple test page and a list of databases retrieved from the
 database server.
+
+
+al ingresar a la url mencionada podemos observer lo siguiente:
+
+![alt-text](/imagenes/web_role.png)
+
+que indica que el despliegue fue satisfactorio
