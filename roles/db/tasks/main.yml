@@ -1,17 +1,27 @@
 ---
 # This playbook will install mysql and create db user and give permissions.
+- name: Set MySQL root
+  debconf:
+   name: mysql-server
+   question: mysql-server/root_password
+   value: "{{ mysql_root_password }}"
+   vtype: password
+
+- name: Set MySQL root again
+  debconf:
+   name: mysql-server
+   question: mysql-server/root_password_again
+   value: "{{ mysql_root_password }}"
+   vtype: password
 
 - name: Install Mysql package
   apt: name={{ item }} state=installed
   with_items:
    - mysql-server
-   - MySQL-python
-   - libselinux-python
-   - libsemanage-python
+   - python-mysqldb
 
-- name: Configure SELinux to start mysql on any port
-  seboolean: name=mysql_connect_any state=true persistent=yes
-  when: sestatus.rc != 0
+- name: Select default mysql directory
+  command: usermod -d /var/lib/mysql/ mysql
 
 - name: Create Mysql configuration file
   template: src=my.cnf.j2 dest=/etc/my.cnf
@@ -19,15 +29,39 @@
   - restart mysql
 
 - name: Start Mysql Service
-  service: name=mysqld state=started enabled=yes
+  service: name=mysql state=started enabled=yes
 
-- name: insert iptables rule
-  lineinfile: dest=/etc/sysconfig/iptables state=present regexp="{{ mysql_port }}"
-              insertafter="^:OUTPUT " line="-A INPUT -p tcp  --dport {{ mysql_port }} -j  ACCEPT"
-  notify: restart iptables
+- name: MySQL | Set debconf vars
+  action: raw echo mysql-server mysql-server/root_password PwdProof2017- $mysql_root_password | /usr/bin/debconf-set-selections
+  tags: mysql
+
+- name: MySQL | Set debconf vars
+  action: raw echo mysql-server mysql-server/root_password_again PwdProof2017- $mysql_root_password | /usr/bin/debconf-set-selections
+  tags: mysql
+
+- name: install .my.cnf with credentials
+  template: src=my.cnf.j2 dest=/root/.my.cnf
+            mode=0400
+  tags: my_cnf
+
+- name: Select default mysql directory
+  command: usermod -d /var/lib/mysql/ mysql
+
+- name: Create Mysql configuration file
+  template:
+    src: my.cnf.j2
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
 
 - name: Create Application Database
-  mysql_db: name={{ dbname }} state=present
+  mysql_db:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    name: "{{ dbname }}"
+    state: present
 
 - name: Create Application DB User
   mysql_user: name={{ dbuser }} password={{ upassword }} priv=*.*:ALL host='%' state=present
