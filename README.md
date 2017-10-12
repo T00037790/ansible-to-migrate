@@ -48,6 +48,6 @@ database server.
 
 al ingresar a la url mencionada podemos observer lo siguiente:
 
-![alt-text](/imagenes/web_role.png)
+![alt-text](/imagenes/index.png)
 
 que indica que el despliegue fue satisfactorio
