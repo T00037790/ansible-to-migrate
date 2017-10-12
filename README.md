@@ -23,6 +23,23 @@ command:
 
         ansible-playbook -i hosts site.yml
 
+una vez ejecutado el playbook se mostrará acontinuacion la ejecucion y compilacion
+de los roles, acontinuacion se muestra el role common:
+
+![alt-text](/imagenes/common_role.png)
+
+
+ejecucion y compilacion del role web:
+
+
+![alt-text](/imagenes/web_role.png)
+
+
+ejecucion y compilacion del role mysql:
+
+
+![alt-text](/imagenes/web_role.png)
+
 
 Once done, you can check the results by browsing to http://localhost/index.php.
 You should see a simple test page and a list of databases retrieved from the
