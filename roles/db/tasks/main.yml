@@ -23,14 +23,6 @@
 - name: Select default mysql directory
   command: usermod -d /var/lib/mysql/ mysql
 
-- name: Create Mysql configuration file
-  template: src=my.cnf.j2 dest=/etc/my.cnf
-  notify:
-  - restart mysql
-
-- name: Start Mysql Service
-  service: name=mysql state=started enabled=yes
-
 - name: MySQL | Set debconf vars
   action: raw echo mysql-server mysql-server/root_password PwdProof2017- $mysql_root_password | /usr/bin/debconf-set-selections
   tags: mysql
@@ -44,17 +36,23 @@
             mode=0400
   tags: my_cnf
 
-- name: Select default mysql directory
-  command: usermod -d /var/lib/mysql/ mysql
-
 - name: Create Mysql configuration file
   template:
-    src: my.cnf.j2
+    src: mysqld.cnf.j2
     dest: /etc/mysql/mysql.conf.d/mysqld.cnf
     owner: root
     group: root
     mode: 0644
     backup: yes
+
+- name: Start Mysql Service
+  service: name=mysql state=started enabled=yes
+
+- name: Started output
+  debug: var=start
+
+- name: Enabled Mysql Service
+  service: name=mysql state=started enabled=yes
 
 - name: Create Application Database
   mysql_db:
